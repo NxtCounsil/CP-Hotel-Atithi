@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control Panel Home</title>
+    <style>
+        /* Basic Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Body Styles */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #F7FBFE;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            padding: 20px;
+        }
+
+        /* Container Styles */
+        .container {
+            text-align: center;
+        }
+
+        /* Image Styles */
+        .header-image {
+            width: 100%;
+            max-width: 440px; /* Adjust to match the total width of the buttons including gap */
+            height: auto;
+            margin-bottom: 30px; /* Space between the image and buttons */
+        }
+
+        /* Cards Container Styles */
+        .cards-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        /* Card Styles */
+        .card {
+            background-color: #ffffff;
+            border: 3px solid #D9E1EC;
+            border-radius: 8px;
+            padding: 20px;
+            width: 200px;
+            transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .card h2 {
+            font-size: 1.5em;
+            color: #333;
+            margin-bottom: 0px;
+        }
+
+        .card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+        .card-1o{
+            text-decoration: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header Image -->
+        <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiUMsIf7djqlnmITxbdOsnHOjSgitR8PlGVGyaUpo_LAGvzdSsCXl6frsyy9-IPWmSKaZqD4SZ0UJGUHHrvj0TnCGjFru43ZophLNn00cZE8tEwYvOxEjxyHSldMkuuMcpBmwJJoLsNvskFN_aGn-2zEETmnynFQZpWAz0RovdYrhMOyLewnQjFxImToR7D/s3264/20240727_234146.png" alt="Header Image" class="header-image">
+
+        <!-- Cards -->
+        <div class="cards-container">
+            <div class="card">
+                <a href="admin%20console%20orders.html" class="card-1o">
+                <h2>Orders</h2>
+                </a>
+            </div>
+            <div class="card">
+                <a href="admin%20console%20add%20product.html" class="card-1o">
+                <h2>Add Item</h2>
+            </a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
