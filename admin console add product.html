@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Input Card</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #F7FBFE;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            margin: 0;
+        }
+        .card {
+            background: #fff;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.04);
+            padding: 20px;
+            width: 350px;
+            max-width: 90%;
+            border: 3px solid #D9E1EC;
+            margin-bottom: 20px;
+        }
+        .card h2 {
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            text-align: center;
+        }
+        .input-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+        .input-group {
+            flex: 0 0 48%;
+        }
+        .input-group input:focus {
+            outline: none;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .input-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1.5px solid #D9E1EC;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        .save-btn, .toggle-btn {
+            width: 100%;
+            padding: 10px;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            font-size: 1em;
+            cursor: pointer;
+            background: #ff3c00;
+            margin-top: 10px;
+            font-weight: bold;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .toggle-btn {
+            background: red;
+        }
+
+        .save-btn:disabled {
+            background: #D9E1EC;
+            cursor: not-allowed;
+            color: #111;
+        }
+
+        .food-list {
+            width: 350px;
+            max-width: 100%;
+        }
+        .food-item {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.03);
+            padding: 10px;
+            margin-bottom: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            border: 2px solid #D9E1EC;
+        }
+        .food-item img {
+            width: 200px;
+            height: 100%;
+            border-radius: 5px;
+        }
+        .food-item h3 {
+            margin: 10px 0 5px;
+            font-size: 1.2em;
+        }
+        .food-item p {
+            margin: 5px 0;
+        }
+        .delete-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: red;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+<script>
+    // Your web app's Firebase configuration
+    var firebaseConfig = {
+        apiKey: "AIzaSyC5HNG_lDg3sazLKWUaEosS5DXK3THP5cc",
+        authDomain: "hotel-atithi-database.firebaseapp.com",
+        databaseURL: "https://hotel-atithi-database-default-rtdb.firebaseio.com",
+        projectId: "hotel-atithi-database",
+        storageBucket: "hotel-atithi-database.appspot.com",
+        messagingSenderId: "782139351890",
+        appId: "1:782139351890:web:bcdfe3ff06e0329ca1508b",
+        measurementId: "G-6T2WB5QJ4T"
+    };
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+
+    function saveData() {
+        var foodName = document.getElementById('food-name').value;
+        var price = document.getElementById('price').value;
+        var minQuantity = document.getElementById('min-quantity').value;
+        var imageUrl = document.getElementById('image-url').value;
+
+        firebase.database().ref('menu').push({
+            pname: foodName,
+            price: price,
+            mv: minQuantity,
+            image: imageUrl,
+            status: "1"
+        }).then(() => {
+            alert('Data saved successfully!');
+            fetchData();
+        }).catch((error) => {
+            console.error('Error saving data: ', error);
+        });
+    }
+
+    function fetchData() {
+        firebase.database().ref('menu').once('value', (snapshot) => {
+            var foodList = document.getElementById('food-list');
+            foodList.innerHTML = ''; // Clear the list before appending new data
+            snapshot.forEach((childSnapshot) => {
+                var data = childSnapshot.val();
+                var foodItem = document.createElement('div');
+                foodItem.className = 'food-item';
+                foodItem.innerHTML = `
+                    <img src="${data.image}" alt="${data.pname}">
+                    <h3>${data.pname}</h3>
+                    <p>Price: ${data.price}</p>
+                    <p>Min Quantity: ${data.mv}</p>
+                    <button class="delete-btn" onclick="deleteData('${childSnapshot.key}')">Delete</button>
+                `;
+                foodList.insertBefore(foodItem, foodList.firstChild); // Add new items at the top
+            });
+        });
+    }
+
+    function deleteData(key) {
+        firebase.database().ref('menu/' + key).remove()
+            .then(() => {
+                alert('Data deleted successfully!');
+                fetchData();
+            })
+            .catch((error) => {
+                console.error('Error deleting data: ', error);
+            });
+    }
+
+function toggleStatus() {
+        var toggleButton = document.getElementById('toggle-btn');
+        var newStatus = toggleButton.textContent === 'Close' ? '0' : '1';
+        var newButtonText = toggleButton.textContent === 'Close' ? 'Open' : 'Close';
+
+        firebase.database().ref('menu').once('value', (snapshot) => {
+            var updates = {};
+            snapshot.forEach((childSnapshot) => {
+                updates[childSnapshot.key + '/status'] = newStatus;
+            });
+
+            firebase.database().ref('menu').update(updates)
+                .then(() => {
+                    alert('Status updated successfully!');
+                    toggleButton.textContent = newButtonText;
+                })
+                .catch((error) => {
+                    console.error('Error updating status: ', error);
+                });
+        });
+    }
+
+    function validateInputs() {
+        var foodName = document.getElementById('food-name').value;
+        var price = document.getElementById('price').value;
+        var minQuantity = document.getElementById('min-quantity').value;
+        var imageUrl = document.getElementById('image-url').value;
+
+        var saveButton = document.querySelector('.save-btn');
+
+        if (foodName && price && minQuantity && imageUrl) {
+            saveButton.disabled = false;
+            saveButton.style.background = '#ff3c00'; // Reset to original background color
+        } else {
+            saveButton.disabled = true;
+            saveButton.style.background = '#D9E1EC'; // Set to disabled background color
+        }
+    }
+
+function fetchToggleStatus() {
+        firebase.database().ref('menu').once('value', (snapshot) => {
+            var status;
+            snapshot.forEach((childSnapshot) => {
+                status = childSnapshot.val().status;
+                // Break after the first item to get the current status
+                return true;
+            });
+            var toggleButton = document.getElementById('toggle-btn');
+            toggleButton.textContent = status === '0' ? 'Open' : 'Close';
+        }).catch((error) => {
+            console.error('Error fetching status: ', error);
+        });
+    }
+
+    // Add event listeners to input fields
+    window.onload = function() {
+        fetchData();
+        fetchToggleStatus();
+        var inputs = document.querySelectorAll('.input-group input');
+        inputs.forEach(input => {
+            input.addEventListener('input', validateInputs);
+        });
+        validateInputs(); // Call initially to set the button state based on any pre-filled data
+    };
+</script>
+
+</head>
+<body>
+    <div class="card">
+        <h2>नवीन आयटम जोडा</h2>
+        <div class="input-row">
+            <div class="input-group">
+                <label for="food-name">Food Name</label>
+                <input type="text" id="food-name" placeholder="उदाहरण → वडा पाव">
+            </div>
+            <div class="input-group">
+                <label for="price">Price</label>
+                <input type="text" id="price" placeholder="उदाहरण → ₹25 / प्लेट">
+            </div>
+        </div>
+        <div class="input-row">
+            <div class="input-group">
+                <label for="min-quantity">Minimum Quantity</label>
+                <input type="text" id="min-quantity" placeholder="उदाहरण → 5">
+            </div>
+            <div class="input-group">
+                <label for="image-url">Image URL</label>
+                <input type="text" id="image-url" placeholder="प्रतिमेची लिंक">
+            </div>
+        </div>
+        <button class="save-btn" onclick="saveData()">जतन करा</button>
+        <button id="toggle-btn" class="toggle-btn" onclick="toggleStatus()">Close</button>
+    </div>
+    <div id="food-list" class="food-list"></div>
+</body>
+</html>
